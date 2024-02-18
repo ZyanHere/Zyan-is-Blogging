@@ -22,11 +22,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     public_id: {
       type: String,
-      required: true
     },
     url: {
       type: String,
-      required: true
     },
   },
   education: {
@@ -62,7 +60,7 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
 }
 
-userSchema.methods.getJWTToken = async function() {
+userSchema.methods.getJWTToken = function() {
     return jwt.sign({id: this._id}, process.env.JWT_SECRET_KEY, {
         expiresIn: process.env.JWT_EXPIRES
     })
