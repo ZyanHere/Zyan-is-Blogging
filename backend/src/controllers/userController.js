@@ -61,3 +61,19 @@ export const logout = asyncHandler(async(req, res, next) => {
     })
 })
 
+export const getMyProfile = asyncHandler((req, res, next) => {
+    const user = req.user;
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  });
+  
+  export const getAllAuthors = asyncHandler(async (req, res, next) => {
+    const authors = await User.find({ role: "Author" });
+    res.status(200).json({
+      success: true,
+      authors,
+    });
+  });
+
