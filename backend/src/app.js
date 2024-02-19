@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import { dbConnection } from './database/dbConnection.js'
 import { errorMiddleware } from './middlewares/error.js'
 import userRouter from "./routes/userRouter.js"
+import blogRouter from "./routes/blogRouter.js"
 import fileUpload from "express-fileupload"
 
 
@@ -33,6 +34,7 @@ app.use(fileUpload({
 }))
 
 app.use("/api/v1/user", userRouter)
+app.use("/api/v1/blog", blogRouter)
 
 dbConnection()
 
