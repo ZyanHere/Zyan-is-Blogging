@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import { dbConnection } from './database/dbConnection.js'
 import { errorMiddleware } from './middlewares/error.js'
 import userRouter from "./routes/userRouter.js"
+import fileUpload from "express-fileupload"
 
 
 dotenv.config(
@@ -26,7 +27,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}))
 
-app.use("/api/v1", userRouter)
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/"
+}))
+
+app.use("/api/v1/user", userRouter)
 
 dbConnection()
 

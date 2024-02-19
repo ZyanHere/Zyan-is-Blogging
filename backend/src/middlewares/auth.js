@@ -1,6 +1,7 @@
 import { asyncHandler } from "./asyncHandler.js";
 import { User } from "../models/userSchema.js";
 import Errorhandler from "./error.js";
+import jwt from "jsonwebtoken"
 
 //AUTHENTICATION
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
