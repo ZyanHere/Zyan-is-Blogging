@@ -22,7 +22,19 @@ export const blogPost = asyncHandler(async (req,res,next) => {
         return next(new Errorhandler("invalid file type",400))
     }
 
-    const {title, intro, paraOneDescription, paraOneTitle, paraTwoDescription, paraTwoTitle,  paraThreeDescription, paraThreeTitle, category} = req.body
+    const {
+        title, 
+        intro, 
+        paraOneDescription, 
+        paraOneTitle, 
+        paraTwoDescription, 
+        paraTwoTitle,  
+        paraThreeDescription, 
+        paraThreeTitle, 
+        category,
+        published
+    } = req.body
+
     const createdBy = req.user._id
     const authorName = req.user.name
     const authorAvatar = req.user.avatar.url
@@ -55,7 +67,8 @@ export const blogPost = asyncHandler(async (req,res,next) => {
         paraTwoTitle,  
         paraThreeDescription, 
         paraThreeTitle, 
-        category,createdBy, 
+        category,
+        createdBy, 
         authorName, 
         authorAvatar,
         mainImage: {
@@ -117,10 +130,119 @@ export const getSingleBlog = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const blog = await Blog.findById(id);
     if (!blog) {
-      return next(new ErrorHandler("Blog not found!", 404));
+      return next(new Errorhandler("Blog not found!", 404));
     }
     res.status(200).json({
       success: true,
       blog,
     });
 });
+
+export const getMyBlogs = asyncHandler(async (req,res,next) => {
+    const createdBy = req.user._id;
+    const blogs = await Blog.find({ createdBy })
+    res.status(200)
+    .json({
+        success: true,
+        blogs,
+    })
+});
+
+export const updateBlog = asyncHandler(async (req, res, next) => {
+    const {id} = req.params;
+    let blog = await Blog.findById(id)
+    if(!blog){
+        return next(new Errorhandler("Blog not Found!", 404))
+    }
+    const newBlogData = {
+        title: req.body.title,
+        intro: req.body.intro,
+        category: req.body.category,
+        paraOneTitle: req.body.paraOneTitle,
+        paraOneDescription: req.body.paraOneDescription,
+        paraTwoTitle: req.body.paraTwoTitle,
+        paraTwoDescription: req.body.paraTwoDescription,
+        paraThreeTitle: req.body.paraThreeTitle,
+        paraThreeDescription: req.body.paraThreeDescription,
+        published: req.body.published
+    }
+    if(req.files){
+        const {
+            mainImage,
+            paraOneImage,
+            paraTwoImage,
+            paraThreeImage
+        } = req.files
+        const allowedFormats = ["image/png", "image/jpeg", "image/webp"]
+        if((mainImage && !allowedFormats.includes(mainImage.mimetype)) 
+            || (paraOneImage && !allowedFormats.includes(paraOneImage.mimetype))
+            || (paraTwoImage && !allowedFormats.includes(paraTwoImage.mimetype))
+            || (paraThreeImage && !allowedFormats.includes(paraThreeImage.mimetype))
+        ){
+            return next(new Errorhandler("Invalid file format, only PNG,JPG and WEBp are allowed.", 400))
+        }
+        if (req.files && mainImage) {
+            const blogMainImageId = blog.mainImage.public_id;
+            await cloudinary.uploader.destroy(blogMainImageId);
+            const newBlogMainImage = await cloudinary.uploader.upload(
+              mainImage.tempFilePath
+            );
+            newBlogData.mainImage = {
+              public_id: newBlogMainImage.public_id,
+              url: newBlogMainImage.secure_url,
+            };
+        }
+      
+        if (req.files && paraOneImage) {
+            if (blog.paraOneImage && blog.paraOneImage.public_id) {
+              const blogParaOneImageId = blog.paraOneImage.public_id;
+              await cloudinary.uploader.destroy(blogParaOneImageId);
+            }
+            const newBlogParaOneImage = await cloudinary.uploader.upload(
+              paraOneImage.tempFilePath
+            );
+            newBlogData.paraOneImage = {
+              public_id: newBlogParaOneImage.public_id,
+              url: newBlogParaOneImage.secure_url,
+            };
+        }
+        if (req.files && paraTwoImage) {
+            if (blog.paraTwoImage && blog.paraTwoImage.public_id) {
+              const blogParaTwoImageId = blog.paraTwoImage.public_id;
+              await cloudinary.uploader.destroy(blogParaTwoImageId);
+            }
+            const newBlogParaTwoImage = await cloudinary.uploader.upload(
+              paraTwoImage.tempFilePath
+            );
+            newBlogData.paraTwoImage = {
+              public_id: newBlogParaTwoImage.public_id,
+              url: newBlogParaTwoImage.secure_url,
+            };
+        }
+        if (req.files && paraThreeImage) {
+            if (blog.paraThreeImage && blog.paraThreeImage.public_id) {
+              const blogParaThreeImageId = blog.paraThreeImage.public_id;
+              await cloudinary.uploader.destroy(blogParaThreeImageId);
+            }
+            const newBlogParaThreeImage = await cloudinary.uploader.upload(
+              paraThreeImage.tempFilePath
+            );
+            newBlogData.paraThreeImage = {
+              public_id: newBlogParaThreeImage.public_id,
+              url: newBlogParaThreeImage.secure_url,
+            };
+        }
+    }
+    blog = await Blog.findByIdAndUpdate(id, newBlogData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+    res.status(200)
+    .json({
+        success: true,
+        message: "Blog Updated",
+        blog
+    })
+
+})
