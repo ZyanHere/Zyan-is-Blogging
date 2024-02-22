@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { AiFillInstagram, AiFillYoutube, AiFillLinkedin } from "react-icons/ai";
-import { FaGitSquare } from "react-icons/fa";
+import { AiFillTwitterSquare, AiFillFacebook, AiFillLinkedin } from "react-icons/ai";
+import { FaGithub } from "react-icons/fa";
 import { Context } from "../../main";
 
 const Footer = () => {
@@ -67,16 +67,16 @@ const Footer = () => {
       <div className="container">
         <div className="logo">Radiant <span>Rhyme</span></div>
         <div className="links">
-          <Link to={"/"} target="_blank">
-            <AiFillInstagram />
+          <Link to={"/https://twitter.com/ZyanHere"} target="_blank">
+            <AiFillTwitterSquare />
           </Link>
-          <Link to={"/"} target="_blank">
-            <FaGitSquare />
+          <Link to={"/https://github.com/ZyanHere"} target="_blank">
+            <FaGithub />
           </Link>
-          <Link to={"https://www.youtube.com/@CodeWithZeeshu"} target="_blank">
-            <AiFillYoutube />
+          <Link to={"https://www.facebook.com/znyandeep.baishya"} target="_blank">
+            <AiFillFacebook />
           </Link>
-          <Link to={"/"} target="_blank">
+          <Link to={"/https://www.linkedin.com/in/jyan-baishya-a6a502217/"} target="_blank">
             <AiFillLinkedin />
           </Link>
         </div>
