@@ -13,6 +13,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import { Context } from './main'
 import axios from 'axios'
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const {setUser, isAuthenticated, setIsAuthenticated, user, setBlogs} = useContext(Context)
@@ -65,6 +66,7 @@ const App = () => {
         <Route path='/blog.update.:id' element={<UpdateBlog/>}/>
       </Routes>
       <Footer/>
+      <Toaster/>
     </BrowserRouter>
   )
 }
